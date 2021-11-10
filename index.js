@@ -19,6 +19,7 @@ async function run() {
 		await client.connect();
 		const database = client.db("PcDrone");
 		const servicesCollection = database.collection("services");
+		const usersCollection = database.collection("users");
 
 		// Add service
 		app.post("/services", async (req, res) => {
@@ -31,6 +32,26 @@ async function run() {
 		app.get("/services", async (req, res) => {
 			const result = await servicesCollection.find({}).toArray();
 			res.send(result);
+		});
+
+		// save register user to database .
+		app.post("/users", async (req, res) => {
+			const user = req.body;
+			const result = await usersCollection.insertOne(user);
+			res.json(result);
+		});
+		// login with
+		app.put("/users", async (req, res) => {
+			const user = req.body;
+			const filter = { email: user.email };
+			const options = { upsert: true };
+			const updateDoc = { $set: user };
+			const result = await usersCollection.updateOne(
+				filter,
+				updateDoc,
+				options
+			);
+			res.json(result);
 		});
 	} finally {
 		// await client.close();
