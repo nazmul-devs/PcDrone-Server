@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const ObjectId = require("mongodb").ObjectId;
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -20,6 +21,8 @@ async function run() {
 		const database = client.db("PcDrone");
 		const servicesCollection = database.collection("services");
 		const usersCollection = database.collection("users");
+		const ordersCollection = database.collection("orders");
+		const reviewsCollection = database.collection("reviews");
 
 		// Add service
 		app.post("/services", async (req, res) => {
@@ -52,6 +55,56 @@ async function run() {
 				options
 			);
 			res.json(result);
+		});
+
+		// post oders
+		app.post("/orders", async (req, res) => {
+			const order = req.body;
+			const result = await ordersCollection.insertOne(order);
+			res.json(result);
+		});
+		// get all orders
+		app.get("/orders", async (req, res) => {
+			const result = await ordersCollection.find({}).toArray();
+			res.send(result);
+		});
+		// get order by email
+		app.get("/myorders", async (req, res) => {
+			const email = req.query.email;
+			const query = { email: email };
+			const result = await ordersCollection.find(query).toArray();
+			res.send(result);
+		});
+		// delete order by id
+		app.delete("/orders", async (req, res) => {
+			const id = req.body.id;
+			const query = { _id: ObjectId(id) };
+			const result = await ordersCollection.deleteOne(query);
+			res.json(result);
+		});
+
+		// review post
+		app.post("/reviews", async (req, res) => {
+			const review = req.body;
+			const result = await reviewsCollection.insertOne(review);
+			res.json(result);
+			console.log(result);
+		});
+
+		// get review
+		app.get("/reviews", async (req, res) => {
+			const result = await reviewsCollection.find({}).toArray();
+			res.send(result);
+		});
+
+		// Make admin
+		app.put("/users/admin", async (req, res) => {
+			const email = req.body.email;
+			const filter = { email: email };
+			const updateDoc = { $set: { role: "admin" } };
+			const result = await usersCollection.updateOne(filter, updateDoc);
+			res.json(result);
+			console.log(result);
 		});
 	} finally {
 		// await client.close();
