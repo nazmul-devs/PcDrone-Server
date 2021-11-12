@@ -37,6 +37,14 @@ async function run() {
 			res.send(result);
 		});
 
+		// delete service by id
+		app.delete("/services", async (req, res) => {
+			const id = req.body.id;
+			const query = { _id: ObjectId(id) };
+			const result = await servicesCollection.deleteOne(query);
+			res.json(result);
+		});
+
 		// save register user to database .
 		app.post("/users", async (req, res) => {
 			const user = req.body;
