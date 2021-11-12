@@ -76,6 +76,24 @@ async function run() {
 			const result = await ordersCollection.find({}).toArray();
 			res.send(result);
 		});
+		// update order status
+		app.put("/orders/:id", async (req, res) => {
+			const id = req.params.id;
+			const status = req.body.status;
+			const filter = { _id: ObjectId(id) };
+			const option = { upsert: true };
+			const updatedDoc = {
+				$set: {
+					status: status,
+				},
+			};
+			const result = await ordersCollection.updateOne(
+				filter,
+				updatedDoc,
+				option
+			);
+			res.json(result);
+		});
 		// get order by email
 		app.get("/myorders", async (req, res) => {
 			const email = req.query.email;
@@ -112,7 +130,6 @@ async function run() {
 			const updateDoc = { $set: { role: "admin" } };
 			const result = await usersCollection.updateOne(filter, updateDoc);
 			res.json(result);
-			console.log(result);
 		});
 		// verify admin
 		app.get("/users/:email", async (req, res) => {
