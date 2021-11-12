@@ -76,6 +76,7 @@ async function run() {
 			const result = await ordersCollection.find({}).toArray();
 			res.send(result);
 		});
+
 		// update order status
 		app.put("/orders/:id", async (req, res) => {
 			const id = req.params.id;
