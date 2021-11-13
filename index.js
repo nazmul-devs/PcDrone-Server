@@ -11,7 +11,7 @@ app.use(express.json());
 
 // jwt
 
-const serviceAccount = require("./pcdrone-adminsdk.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMINSDK);
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
