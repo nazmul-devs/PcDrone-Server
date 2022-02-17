@@ -185,7 +185,7 @@ run().catch(console.dir);
 
 // get app
 app.get("/", (req, res) => {
-	res.send("One care server is running");
+	res.send("Hello pc drone");
 });
 
 // lisening app
